@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+  <title>EY-NCVET Job Analyzer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .background {
+      background: url('/static/bg.png') no-repeat center bottom;
+      background-size: cover;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav {
+      display: flex;
+      width: 100%;
+      padding: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .ey {
+      background-image: url('/static/ey-white-logo.png');
+    }
+
+    .ncvet {
+      background-image: url('/static/cropped-ncvet_fav-1.png');
+    }
+
+    .overlay {
+      padding: 20px 0;
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+      text-align: center;
+    }
+
+    .overlay h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .underline {
+      height: 5px;
+      width: 50px;
+      background-color: white;
+      margin: 10px auto;
+      border-radius: 10px;
+    }
+
+    .description p {
+      padding: 20px;
+      text-align: center;
+      color: white;
+      font-size: 1rem;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .inputs-container {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .inputs {
+      display: flex;
+      width: 90%;
+      max-width: 600px;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .input, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      color: black;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+    }
+
+    .btn-container {
+      width: 100%;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .submit-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .inputs, .input, select {
+        flex-direction: column;
+      }
+
+      .line {
+        display: none;
+      }
+
+      .overlay h1 {
+        font-size: 1.5rem;
+      }
+
+      .description p {
+        font-size: .9rem;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+  <div class="background">
+    <div class="nav">
+      <div class="ey icon"></div>
+      <div class="ncvet icon"></div>
+    </div>
+    <div class="overlay">
+      <h1>EY-NCVET Job Analyzer</h1>
+      <div class="underline"></div>
+    </div>
+    <div class="description">
+      <p>Generative AI Based Industry Insights in Identifying desired qualifications of a job role</p>
+    </div>
+    <div class="inputs-container">
+      <div class="inputs">
+        <input id="job_title" class="input designation" placeholder="Enter Job Title/Designation">
+        <select name="exp" id="exp" >
+          <option value="" disabled selected>Select the Experience</option>
+          <option value="zero to one">0-1</option>
+          <option value="one to three">1-3</option>
+          <option value="three to five">3-5</option>
+          <option value="five or more">5+</option>
+        </select>
+        <input id="location" class="input location" placeholder="Enter Location">
+      </div>
+    </div>
+        <div class="btn-container">
+      <button type="button" class="submit-btn" onclick="predictMalware()">Submit</button>
+    </div>
+  </div>
+  <div id="result"></div>
+  <script>
+    function predictMalware() {
+      const jobTitle = document.getElementById("job_title").value;
+      const location = document.getElementById("location").value;
+      const experience = document.getElementById("exp").value;
+
+      fetch("/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          job_title: jobTitle,
+          location: location,
+          experience: experience
+        })
+      })
+      .then(response => response.json())
+
+      .then(data => {
+        const resultElement = document.getElementById("result");
+        if (data.prediction) {
+          resultElement.innerText = "Prediction: " + data.prediction;
+        } else {
+          resultElement.innerText = "No prediction data received.";
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("result").innerText = "Failed to load prediction.";
+      });
+    }
+  </script>
+</body>
+</html>
+
+
